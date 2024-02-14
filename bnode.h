@@ -34,17 +34,17 @@ public:
    // 
    // Construct
    //
-   BNode()
+   BNode(): pLeft(nullptr), pRight(nullptr), pParent(nullptr), data(T())
    {
-      pLeft = pRight = this;
+   
    }
-   BNode(const T &  t) 
+   BNode(const T &  t): pLeft(nullptr), pRight(nullptr), pParent(nullptr), data(t)
    {
-      pLeft = pRight = this;
+      
    }
-   BNode(T && t) 
+   BNode(T && t) : pLeft(nullptr), pRight(nullptr), pParent(nullptr), data(std::move(t))
    {
-      pLeft = pRight = this;
+      
    }
 
    //
@@ -127,7 +127,20 @@ void addRight(BNode <T>* pNode, T && t)
 template <class T>
 void clear(BNode <T> * & pThis)
 {
+   if (pThis == nullptr)
+      return;
+   
+   // Left
+   clear(pThis->pLeft);
 
+   // Right
+   clear(pThis->pRight);
+   
+   // Visit
+   delete(pThis);
+   
+   return;
+   
 }
 
 /***********************************************
@@ -149,7 +162,27 @@ inline void swap(BNode <T>*& pLHS, BNode <T>*& pRHS)
 template <class T>
 BNode <T> * copy(const BNode <T> * pSrc) 
 {
-   return new BNode<T>;
+   if (pSrc == nullptr)
+      return nullptr;
+   
+   // Visit
+   BNode<T> * destination = new BNode<T> (pSrc->data);
+   
+   // Left
+   destination->pLeft = copy(pSrc->pLeft);
+   if (destination->pLeft != nullptr)
+      
+      // Add left's address to parent
+      destination->pLeft->pParent = destination;
+   
+   // Right
+   destination->pRight = copy(pSrc->pRight);
+   if (destination->pRight != nullptr)
+      
+      // Add right's address to parent
+      destination->pRight->pParent = destination;
+   
+   return destination;
 }
 
 /**********************************************
@@ -160,5 +193,48 @@ BNode <T> * copy(const BNode <T> * pSrc)
 template <class T>
 void assign(BNode <T> * & pDest, const BNode <T>* pSrc)
 {
-
+   if (pSrc == nullptr)
+      clear(pDest);
+  
+   else if (pDest == nullptr && pSrc != nullptr)
+   {
+      // Visit
+      pDest = new BNode<T>(pSrc->data);
+      
+      // Right
+      assign(pDest->pRight, pSrc->pRight);
+      if (pDest->pRight != nullptr)
+         
+         // Add left's address to parent
+         pDest->pRight->pParent = pDest;
+      
+      // Left
+      assign(pDest->pLeft, pSrc->pLeft);
+      if (pDest->pLeft != nullptr)
+         
+         // Add left's address to parent
+         pDest->pLeft->pParent = pDest;
+      
+   }
+   else if (pDest != nullptr && pSrc != nullptr )
+   {
+      // Visit
+      pDest->data = pSrc->data;
+      
+      // Right
+      assign(pDest->pRight, pSrc->pRight);
+      if (pDest->pRight != nullptr)
+         
+         // Add left's address to parent
+         pDest->pRight->pParent = pDest;
+      
+      // Left
+      assign(pDest->pLeft, pSrc->pLeft);
+      if (pDest->pLeft != nullptr)
+         
+         // Add left's address to parent
+         pDest->pLeft->pParent = pDest;
+   }
+   
+   return;
 }
