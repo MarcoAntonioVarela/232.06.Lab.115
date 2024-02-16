@@ -14,7 +14,7 @@
  *        BNode         : A class representing a BNode
  *    Additionally, it will contain a few functions working on Node
  * Author
- *    <your names here>
+ *       Andre Regino & Marco Varela
  ************************************************************************/
 
 #pragma once
@@ -63,7 +63,14 @@ public:
 template <class T>
 inline size_t size(const BNode <T> * p)
 {
-   return 99;
+   // Check if we just passed a leaf
+   if (p == nullptr)
+      return 0;
+   
+   else
+      
+      // Use recurssion and add current node
+      return size(p->pLeft) + size(p->pRight) + 1 ;
 }
 
 
@@ -74,7 +81,11 @@ inline size_t size(const BNode <T> * p)
 template <class T>
 inline void addLeft(BNode <T> * pNode, BNode <T> * pAdd)
 {
-
+   // Connect parent to child
+   pNode->pLeft = pAdd;
+   
+   // Connect child to parent
+   pAdd->pParent = pNode;
 }
 
 /******************************************************
@@ -84,7 +95,11 @@ inline void addLeft(BNode <T> * pNode, BNode <T> * pAdd)
 template <class T>
 inline void addRight (BNode <T> * pNode, BNode <T> * pAdd)
 {
-
+   // Connect parent to child
+   pNode->pRight = pAdd;
+   
+   // Connect child to parent
+   pAdd->pParent = pNode;
 }
 
 /******************************************************
@@ -94,13 +109,27 @@ inline void addRight (BNode <T> * pNode, BNode <T> * pAdd)
 template <class T>
 inline void addLeft (BNode <T> * pNode, const T & t) 
 {
-
+   // Create node to add
+   BNode<T> * pAdd = new BNode<T> (t);
+   
+   // Connect node to parent
+   pAdd->pParent = pNode;
+   
+   // Connect parent to child
+   pNode->pLeft = pAdd;
 }
 
 template <class T>
 inline void addLeft(BNode <T>* pNode, T && t)
 {
-
+   // Create node to add
+   BNode<T> * pAdd = new BNode<T> (std::move(t));
+   
+   // Connect node to parent
+   pAdd->pParent = pNode;
+   
+   // Connect parent to child
+   pNode->pLeft = pAdd;
 }
 
 /******************************************************
@@ -110,13 +139,27 @@ inline void addLeft(BNode <T>* pNode, T && t)
 template <class T>
 void addRight (BNode <T> * pNode, const T & t)
 {
-
+   // Create node to add
+   BNode<T> * pAdd = new BNode<T> (t);
+   
+   // Connect node to parent
+   pAdd->pParent = pNode;
+   
+   // Connect parent to child
+   pNode->pRight = pAdd;
 }
 
 template <class T>
 void addRight(BNode <T>* pNode, T && t)
 {
-
+   // Create node to add
+   BNode<T> * pAdd = new BNode<T> (std::move(t));
+   
+   // Connect node to parent
+   pAdd->pParent = pNode;
+   
+   // Connect parent to child
+   pNode->pRight = pAdd;
 }
 
 /*****************************************************
@@ -137,7 +180,8 @@ void clear(BNode <T> * & pThis)
    clear(pThis->pRight);
    
    // Visit
-   delete(pThis);
+   delete pThis;
+   pThis = nullptr;
    
    return;
    
@@ -151,7 +195,7 @@ void clear(BNode <T> * & pThis)
 template <class T>
 inline void swap(BNode <T>*& pLHS, BNode <T>*& pRHS)
 {
-
+   std::swap(pLHS, pRHS);
 }
 
 /**********************************************
@@ -195,7 +239,8 @@ void assign(BNode <T> * & pDest, const BNode <T>* pSrc)
 {
    if (pSrc == nullptr)
       clear(pDest);
-  
+    
+   
    else if (pDest == nullptr && pSrc != nullptr)
    {
       // Visit
